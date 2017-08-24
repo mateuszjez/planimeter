@@ -222,8 +222,6 @@ drawfillcol = glb_fcts.color_action('get','');
                 XYLim = data(pic).XYLim;
                 show_image();
             end
-%         elseif strcmp(SrcTag,'imfill')
-%             fill_in_preview();
         elseif strcmp(SrcTag,'delline')
             chldrn = get(axes_img,'Children');
             for i=1:length(chldrn)
@@ -252,11 +250,7 @@ drawfillcol = glb_fcts.color_action('get','');
         end
     end
     function fill_in_preview(pntr)
-%         pixpst = pntr(1,2:-1:1);
         glb_fcts.fill_in_preview(pntr);
-%         preview_data = get(img_hndl,'CData');
-%         preview_data = fill_with_color(preview_data,pixpst,[1 1 1]);
-%         set(img_hndl,'CData',preview_data);
     end
     function img_ButtonDownFcn(source,eventdata)
         seltype = get(gcf,'SelectionType');
@@ -408,8 +402,6 @@ drawfillcol = glb_fcts.color_action('get','');
             XData = get(source,'XData');
             YData = get(source,'YData');
             pntr = get(axes_img,'CurrentPoint');
-%             data = glb_fcts.get_data();
-%             pic = glb_fcts.get_act_pict();
             imgSize = diff(XYLim'); %#ok<UDIM>
             absSize = absolute_size(axes_img);
             fc = absSize./imgSize;
@@ -426,15 +418,7 @@ drawfillcol = glb_fcts.color_action('get','');
         end
     end
     function modification_preview(CData)
-%         chldrn = get(axes_img,'Children');
-%         for i=1:length(chldrn)
-%             Tag = get(chldrn(i),'Tag');
-%             if strcmp(Tag,'img2');
-%                 set(chldrn(i),'CData',CData);
-%                 break;
-%             end
-%         end
-                set(img_hndl,'CData',CData);
+        set(img_hndl,'CData',CData);
     end
     function preview_data = get_preview_data(varargin)
         preview_data = [];
