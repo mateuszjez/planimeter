@@ -70,8 +70,13 @@ bttn_udsq = updown_btts(panel_hdl,lbx_area,@getAreaData,@setAreaData...
 
 %Save calculated areas
 bttn_svr = uicontrol('Parent',panel_hdl,'Style','pushbutton','Unit',unts...
-    ,'Position',[525 30 70 25].*rsz_fc,'String','Save results','Tag','bttn_sv'...
-    ,'Callback',{@bttn_svr_Callback});
+    ,'Position',[525 30 70 25].*rsz_fc,'String','Save results'...
+    ,'Tag','bttn_svr','Callback',{@bttn_svr_Callback});
+
+%Save current work in m-file
+bttn_svcw = uicontrol('Parent',panel_hdl,'Style','pushbutton','Unit',unts...
+    ,'Position',[500 5 95 25].*rsz_fc,'String','Save current work'...
+    ,'Tag','bttn_svcw','Callback',{@bttn_svcw_Callback});
 
 uicontrol('Parent',panel_hdl,'Style','text','Unit',unts...
     ,'Position',[[190 280 180].*rsz_fc(1:3) 15],'String','Left picture'...
@@ -243,6 +248,22 @@ pup_menu(2) = uicontrol('Parent',panel_hdl,'Style','popupmenu'...
             end
         end
     end
+    function bttn_svcw_Callback(source,eventdata)
+        WorkData.data = glb_fcts.get_data();
+        if ~isempty(WorkData.data)
+            WorkData.AreaData = glb_fcts.areadata('get');
+            WorkData.DrawingMode = glb_fcts.drawing_mode('get');
+            WorkData.DrawingModePreview ...
+                = glb_fcts.drawing_mode('get','preview');
+            pic = glb_fcts.get_act_pict();
+            [filename, path, filterindex] ...
+                = uiputfile('*.mat','Save currend work' ...
+                ,WorkData.data(pic).pathname);
+            if filterindex
+                save([path filename '.mat'],'WorkData','-v7.3');
+            end
+        end
+    end
     function pup_menu_Callback(source,eventdata)
         pic = glb_fcts.get_act_pict();
         data = glb_fcts.get_data();
@@ -317,7 +338,7 @@ function svTable = prepare_svTable(AreaData)
     svTable = [svTable;tempTable];
 end
 function save_results_to_csv(svTable,fullpath)
-%funckja zapisuj¹ca wyniki obliczeñ (svTable) do pliku (fullpath)
+%calculation results in svTable are saved to a file indicated by fullpath
     Size = size(svTable);
     fid = fopen(fullpath,'wt');
     try
