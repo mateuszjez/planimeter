@@ -130,6 +130,7 @@ bttn_chsq = uicontrol('Parent',panel_hdl,'Style','pushbutton','Unit',unts...
                 Nf = 1;
                 filenames = {filenames};
             end
+            WorkData = [];
             for i=1:Nf
                 filename = filenames{i};
                 if strcmp(filename((end-3):(end)),'.png')
@@ -155,21 +156,44 @@ bttn_chsq = uicontrol('Parent',panel_hdl,'Style','pushbutton','Unit',unts...
                     elseif length(size(ui8))==3
                         ui8image = ui8;
                     end
+                elseif strcmp(filename((end-3):(end)),'.mat')
+                    ui8image = [];
+                    ldWD = load([pathname filename]);
+                    if isfield(ldWD,'WorkData')&&i==1
+                        WorkData = ldWD.WorkData;%#ok<AGROW>
+                    elseif isfield(ldWD,'WorkData')&&i>1
+                        WorkData(i) = ldWD.WorkData;%#ok<AGROW>
+                    else
+                        error([pathname filename ...
+                            'has no WorkData structure']);
+                    end
+                else
+                    ui8image = [];
                 end
-                tempdata(i).filename     = filename; %#ok<AGROW>
-                tempdata(i).samplename   = filename; %#ok<AGROW>
-                tempdata(i).pathname     = pathname; %#ok<AGROW>
-                tempdata(i).picture.data = im2double(ui8image);%#ok<AGROW>
+                if ~isempty(ui8image)
+                    tempdata(i).filename     = filename; %#ok<AGROW>
+                    tempdata(i).samplename   = filename; %#ok<AGROW>
+                    tempdata(i).pathname     = pathname; %#ok<AGROW>
+                    tempdata(i).picture.data = im2double(ui8image);%#ok<AGROW>
+                end
             end
             data = glb_fcts.get_data();
+            if ~isempty(WorkData)
+                tempdata = WorkData(1).data;
+                for i=2:length(WorkData)
+                    htempdata           = WorkData(i).data;
+                    [tempdata,htempdata]=adjuststructs(tempdata,htempdata);
+                    tempdata            = [tempdata htempdata]; %#ok<AGROW>
+                end
+            end
             if isempty(data)
                 data = tempdata;
             else
                 %some fields in data structure may be added during the work
                 %with this application, thus additional fields must be
                 %taken into account and added in new data
-                tempdata = adjustfields(data(1),tempdata);
-                data     = [data tempdata];
+                [data tempdata] = adjuststructs(data,tempdata);
+                data            = [data tempdata];
             end
             glb_fcts.set_data(data);
             refresh();
