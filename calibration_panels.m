@@ -58,11 +58,19 @@ pupm_unt(1) = uicontrol('Parent',panel_hdl,'Unit',unts,'Style','popupmenu'...
     ,'Position',[125 180 50 20].*rsz_fc,'Tag','unt1','String'...
     ,{'mm','cm','m'});
 uicontrol('Parent',panel_hdl,'Unit',unts,'Style','text'...
-    ,'Position',[[10 160 100].*rsz_fc(1:3) 15],'String','Total area:');
+    ,'Position',[[5 160 45].*rsz_fc(1:3) 15],'String','Total area:');
+uicontrol('Parent',panel_hdl,'Unit',unts,'Style','text'...
+    ,'Position',[[60 160 40].*rsz_fc(1:3) 15],'String','T. width:');
+uicontrol('Parent',panel_hdl,'Unit',unts,'Style','text'...
+    ,'Position',[[105 160 40].*rsz_fc(1:3) 15],'String','T. height:');
 edt_tarea(1) = uicontrol('Parent',panel_hdl,'Unit',unts,'Style','edit'...
-    ,'Position',[10 140 100 20].*rsz_fc,'Tag','edt_tarea1');
+    ,'Position',[5 140 45 20].*rsz_fc,'Tag','edt_tarea1');
+edt_twidth(1) = uicontrol('Parent',panel_hdl,'Unit',unts,'Style','edit'...
+    ,'Position',[60 140 40 20].*rsz_fc,'Tag','edt_twidtha1');
+edt_theight(1) = uicontrol('Parent',panel_hdl,'Unit',unts,'Style','edit'...
+    ,'Position',[105 140 40 20].*rsz_fc,'Tag','edt_theighta1');
 bttn(1) = uicontrol('Parent',panel_hdl,'Unit',unts,'Style','pushbutton'...
-    ,'Position',[125 140 60 30].*rsz_fc,'String','Apply','Tag','apply1');
+    ,'Position',[150 140 40 30].*rsz_fc,'String','Apply','Tag','apply1');
 
 chkbx(2) = uicontrol('Parent',panel_hdl,'Unit',unts,'Style','checkbox'...
     ,'Position',[10 115 150 15].*rsz_fc,'String','Calibrate lengths'...
@@ -82,11 +90,19 @@ pupm_unt(2) = uicontrol('Parent',panel_hdl,'Unit',unts,'Style','popupmenu'...
     ,'Position',[135 75 50 20].*rsz_fc,'Tag','unt2','String'...
     ,{'mm','cm','m'});
 uicontrol('Parent',panel_hdl,'Unit',unts,'Style','text'...
-    ,'Position',[[10 55 100].*rsz_fc(1:3) 15],'String','Total area:');
+    ,'Position',[[5 55 45].*rsz_fc(1:3) 15],'String','Total area:');
+uicontrol('Parent',panel_hdl,'Unit',unts,'Style','text'...
+    ,'Position',[[60 55 40].*rsz_fc(1:3) 15],'String','T. width:');
+uicontrol('Parent',panel_hdl,'Unit',unts,'Style','text'...
+    ,'Position',[[105 55 40].*rsz_fc(1:3) 15],'String','T. height:');
 edt_tarea(2) = uicontrol('Parent',panel_hdl,'Unit',unts,'Style','edit'...
-    ,'Position',[10 35 100 20].*rsz_fc,'Tag','edt_tarea2');
+    ,'Position',[5 35 45 20].*rsz_fc,'Tag','edt_tarea2');
+edt_twidth(2) = uicontrol('Parent',panel_hdl,'Unit',unts,'Style','edit'...
+    ,'Position',[60 35 40 20].*rsz_fc,'Tag','edt_twidtha2');
+edt_theight(2) = uicontrol('Parent',panel_hdl,'Unit',unts,'Style','edit'...
+    ,'Position',[105 35 40 20].*rsz_fc,'Tag','edt_theighta2');
 bttn(2) = uicontrol('Parent',panel_hdl,'Unit',unts,'Style','pushbutton'...
-    ,'Position',[125 35 60 30].*rsz_fc,'String','Apply','Tag','apply2');
+    ,'Position',[150 35 40 30].*rsz_fc,'String','Apply','Tag','apply2');
 txt_area = uicontrol('Parent',panel_hdl,'Unit',unts,'Style','text'...
     ,'Position',[10 5 180 15].*rsz_fc,'String'...
     ,'Total area applied: 0 mm2','Tag','txt_area');
@@ -119,6 +135,10 @@ set(bttn,'Callback',{@bttn_Callback});
                 val = get(edt(1),'UserData')*get(edt(2),'UserData');
                 val = val*prod(Size(1:2))/prod(XYLimSize);
                 set(edt_tarea(1),'String',num2str(val),'UserData',val);
+                TSize = [get(edt(1),'UserData') get(edt(2),'UserData')];
+                TSize = TSize.*(Size(2:-1:1)./XYLimSize);
+                set(edt_twidth(1),'String',num2str(TSize(1)),'UserData',TSize(1));
+                set(edt_theight(1),'String',num2str(TSize(2)),'UserData',TSize(2));
             elseif any(strcmp(Tag,{'L1','L2','unt2'}))
                 dist1 = get(edt(3),'UserData');
                 dist2 = get(edt(4),'UserData');
@@ -140,7 +160,9 @@ set(bttn,'Callback',{@bttn_Callback});
                         &&length(X2Data)==2 && length(Y2Data)==2
                     val = calib_tot_area(dist1,dist2,X1Data,Y1Data...
                         ,X2Data,Y2Data,Size);
-                    set(edt_tarea(2),'String',num2str(val),'UserData',val);
+                    set(edt_tarea(2),'String',num2str(val(1)),'UserData',val(1));
+                    set(edt_twidth(2),'String',num2str(val(2)),'UserData',val(2));
+                    set(edt_theight(2),'String',num2str(val(3)),'UserData',val(3));
                 end
             end
         end
@@ -168,12 +190,16 @@ set(bttn,'Callback',{@bttn_Callback});
                 set(txt_area,'String',['Total area applied: '...
                     get(edt_tarea(1),'String') ' ' strcell{val} '2']);
                 data(pic).TotalArea = get(edt_tarea(1),'UserData');
+                data(pic).TotXSize = get(edt_twidth(1),'UserData');
+                data(pic).TotYSize = get(edt_theight(1),'UserData');
             elseif strcmp(Tag,'apply2')
                 strcell = get(pupm_unt(2),'String');
                 val = get(pupm_unt(2),'Value');
                 set(txt_area,'String',['Total area applied: '...
                     get(edt_tarea(2),'String') ' ' strcell{val} '2']);
                 data(pic).TotalArea = get(edt_tarea(2),'UserData');
+                data(pic).TotXSize = get(edt_twidth(2),'UserData');
+                data(pic).TotYSize = get(edt_theight(2),'UserData');
             end
             data(pic).Units = [strcell{val} '2'];
             glb_fcts.set_data(data);
@@ -193,7 +219,9 @@ function A=calib_tot_area(dist1,dist2,X1Data,Y1Data,X2Data,Y2Data,Size_img)
     detMy = det(My);
     x1_fact = sqrt(abs(detMx/detM));
     y2_fact = sqrt(abs(detMy/detM));
-    A = x1_fact*Size_img(2)*y2_fact*Size_img(1);
+    A = [x1_fact*Size_img(2)*y2_fact*Size_img(1)...
+        x1_fact*Size_img(2) y2_fact*Size_img(1)];
+    
 %     set(tot_area2,'String',num2str(f_tot_area));
 end
 

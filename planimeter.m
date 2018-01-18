@@ -22,6 +22,7 @@ glb_fcts.get_cp_mod_sequence    = @get_cp_mod_sequence;
 glb_fcts.dis_or_enable          = @dis_or_enable;
 
 %creating and positioning main window
+set(0,'Units','pixels');
 ScrSiz = get(0,'ScreenSize');
 figpst = [0.07*ScrSiz(3) 0.1*ScrSiz(4) 0.86*ScrSiz(3) 0.8*ScrSiz(4)];
 main_window = figure('Position',figpst,'MenuBar','none');

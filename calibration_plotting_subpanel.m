@@ -603,6 +603,8 @@ cxmhdl = [];
                 Size = size(data(pic).picture(1).data);
                 data(pic).PolygonData.XData = XData;
                 data(pic).PolygonData.YData = YData;
+                data(pic).PolygonData.RelXData = XData/Size(2);
+                data(pic).PolygonData.RelYData = YData/Size(1);
                 data(pic).PolygonData.RelPolyArea = Area/(Size(1)*Size(2));
                 glb_fcts.set_data(data);
                 glb_fcts.refresh();
@@ -615,6 +617,8 @@ cxmhdl = [];
                 set(source,'XData',XData,'YData',YData);
                 data(pic).PolygonData.XData = XData;
                 data(pic).PolygonData.YData = YData;
+                data(pic).PolygonData.RelXData = XData*0;
+                data(pic).PolygonData.RelYData = YData*0;
                 data(pic).PolygonData.RelPolyArea = 0;
                 glb_fcts.set_data(data);
                 if chkrefresh
